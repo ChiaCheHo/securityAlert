@@ -1,23 +1,12 @@
-// import React from 'react';
-
-// function App() {
-//     return (
-//         <div>
-//             <h1>Hello, Security App!</h1>
-//         </div>
-//     );
-// }
-
-// export default App;
-
 import React, { useEffect, useState } from 'react';
 import './App.css';
 
-function Led({ message, active }) {
+function Led({ code, message }) {
+    const isOn = code !== 0;
     return (
         <div className="led-container">
-            <div className={`led ${active ? 'alarm' : 'normal'}`}></div>
-            <span className="label">{message}</span>
+            <div className={`led ${isOn ? 'on' : 'off'}`}></div>
+            <div className="label">{message}</div>
         </div>
     );
 }
@@ -27,19 +16,23 @@ function App() {
 
     useEffect(() => {
         fetch('http://localhost:8080/api/status')
-            .then(res => res.json())
-            .then(data => setStatuses(data));
+            .then(res => {
+                if (!res.ok) throw new Error(res.statusText);
+                return res.json();
+            })
+            .then(data => setStatuses(data))
+            .catch(err => console.error('Fetch error:', err));
     }, []);
 
     return (
         <div className="App">
-            <h1>設備警報狀態</h1>
-            <div className="grid">
-                {statuses.map(s => (
+            <h1>設備警報監控</h1>
+            <div className="led-grid">
+                {statuses.map(ds => (
                     <Led
-                        key={s.device}
-                        active={s.code !== 0}
-                        message={`設備 ${s.device}: ${s.message}`}
+                        key={ds.device}
+                        code={ds.code}
+                        message={`#${ds.device}: ${ds.message}`}
                     />
                 ))}
             </div>
