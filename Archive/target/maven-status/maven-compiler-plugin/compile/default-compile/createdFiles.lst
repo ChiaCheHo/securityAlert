@@ -1,0 +1,4 @@
+com/example/archive/controller/DeviceStatusController.class
+com/example/archive/model/DeviceStatus.class
+com/example/archive/service/DeviceStatusService.class
+com/example/archive/ArchiveApplication.class

@@ -1,0 +1,6 @@
+java 21
+資料庫 mysql 8
+資料庫套件 mybatis
+lombak
+spring boot 3.4.x
+
