@@ -3,6 +3,7 @@ package com.example.archive.model;
 /**
  * 單個設備狀態
  */
+
 public class DeviceStatus {
     private int device;
     private int code;

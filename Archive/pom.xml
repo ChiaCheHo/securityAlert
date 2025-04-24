@@ -46,6 +46,18 @@
             <version>8.0.32</version>  <!-- 加上合適的版本號 -->
             <scope>runtime</scope>
         </dependency>
+        <!-- j2mod -->
+        <dependency>
+            <groupId>com.ghgande</groupId>
+            <artifactId>j2mod</artifactId>
+            <version>2.5.2</version>
+        </dependency>
+        <!-- 加入 Modbus/TCP 庫 -->
+        <dependency>
+            <groupId>com.ghgande</groupId>
+            <artifactId>j2mod</artifactId>
+            <version>2.5.0</version>
+        </dependency>
         <!-- 測試依賴 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
