@@ -1,14 +1,64 @@
-/* 全局 */
-.App {
-    padding: 20px;
-    font-family: sans-serif;
-    background: #f5f5f5;
+/* 全局  */
+:root {
+    /* 主背景：淺粉藍 */
+    --bg-main: #e6f9ff;
+    /* 側欄背景：稍深一點的粉藍 */
+    --bg-sidebar: #cdefff;
+    /* 內容背景保持白色 */
+    --bg-content: #ffffff;
+    /* 主要強調色：柔和的藍色 */
+    --accent: #66baff;
+    /* 強調色的淡色版本 */
+    --accent-light: #c2e5ff;
+    /* 文字顏色不變 */
+    --text-primary: #333333;
 }
 
-/* 整體標題 */
+.App {
+    padding: 20px;
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg-main);
+}
+
 h1 {
-    text-align: center;
+    color: var(--accent);
     margin-bottom: 24px;
+}
+
+/* Tabs 樣式 */
+.tabs {
+    display: flex;
+    background: var(--bg-content);
+    border-bottom: 2px solid var(--accent-light);
+    padding: 0 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tab {
+    padding: 12px 24px;
+    margin: 4px 4px 0;
+    background: var(--accent-light);
+    border: none;
+    border-radius: 10px 10px 0 0;
+    cursor: pointer;
+    font-size: 1em;
+    color: var(--text-primary);
+    transition: background 0.3s, box-shadow 0.3s;
+    position: relative;
+    top: 2px;
+}
+
+.tab:hover {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tab.active {
+    background: var(--bg-content);
+    color: var(--accent);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1;
 }
 
 /* 主容器 */
@@ -17,53 +67,70 @@ h1 {
     gap: 20px;
 }
 
-/* 左邊 Sidebar */
+/* Sidebar */
 .sidebar {
-    width: 250px;
-    background: #fff;
+    width: 300px;
+    background: var(--bg-sidebar);
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    height: fit-content;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* 第一區：固定 LED 樣式 (在 Sidebar 中) */
+/* 線性排列 Sidebar 項目 */
 .led-grid {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
 }
 
 .led-box {
     display: flex;
-    flex-direction: row;
     align-items: center;
-    justify-content: space-between;
-    width: 100%;
+    background: var(--bg-content);
+    padding: 8px 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     gap: 8px;
+}
+
+/* 強制內容順序：LED, 名稱, 狀態, 樓層 */
+.led-box .led-square {
+    order: 1;
+    position: relative;
+}
+
+.led-box .name-label {
+    order: 2;
+    flex: 1;
+}
+
+.led-box .status-label {
+    order: 3;
+}
+
+.led-box .floor-select {
+    order: 4;
 }
 
 .name-label,
 .status-label {
-    display: inline-block;
-    background: rgba(0, 0, 0, 0.6);
-    color: #fff;
-    padding: 4px 8px;
+    background: var(--accent-light);
+    color: var(--text-primary);
+    padding: 6px 10px;
     border-radius: 4px;
     font-size: 0.8em;
-    text-align: center;
-    flex: 1;
 }
 
-.name-label {
-    text-align: left;
+.floor-select {
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid var(--accent-light);
+    background: var(--bg-content);
+    font-size: 0.8em;
+    color: var(--text-primary);
 }
 
-.status-label {
-    text-align: right;
-}
-
-/* LED 圓角正方形 (非拖曳 LED 尺寸) */
+/* Sidebar LED */
 .led-box .led-square {
     width: 20px;
     height: 20px;
@@ -80,18 +147,32 @@ h1 {
     background: green;
 }
 
-/* 第二區：拖曳 + 平面圖 */
+/* Draggable Area */
 .draggable-area {
     position: relative;
     flex: 1;
     height: 700px;
-    border: 2px dashed rgba(0, 0, 0, 0.2);
+    border: 2px dashed var(--accent-light);
+    background-color: var(--bg-content);
     background-repeat: no-repeat;
-    background-position: center center;
+    background-position: center;
     background-size: contain;
+    transition: border-color 0.3s;
 }
 
-/* 可拖曳的 LED */
+.draggable-area:hover {
+    border-color: var(--accent);
+}
+
+.draggable-content {
+    position: absolute;
+    top: 44px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* 可拖曳的 地標 pin */
 .draggable-led {
     position: absolute;
     display: flex;
@@ -100,13 +181,13 @@ h1 {
     user-select: none;
 }
 
-/* 拖曳 LED 的圓角正方形 (保持原尺寸) */
 .draggable-led .led-square {
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
     background: #555;
-    margin: 6px 0;
+    position: relative;
+    margin: 0;
 }
 
 .draggable-led .led-square.on {
@@ -117,20 +198,45 @@ h1 {
     background: green;
 }
 
+/* pin 尾部 */
+.draggable-led .led-square::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 12px;
+    background: inherit;
+    clip-path: polygon(50% 100%, 0 0, 100% 0);
+}
+
+/* 內嵌圖示 */
+.status-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    height: 60%;
+    pointer-events: none;
+}
+
 .draggable-led .name-label {
     cursor: pointer;
     margin-bottom: 6px;
     font-size: 0.9em;
+    background: var(--accent-light);
+    padding: 4px 6px;
+    border-radius: 4px;
 }
 
-/* 懸停顯示狀態信息，顯示在右側，背景以及文字 */
 .draggable-led .status-label {
     position: absolute;
-    /* 垂直居中對齊 LED */
     top: 50%;
     left: 40px;
     transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.8);
+    background: var(--accent);
     color: #fff;
     padding: 8px 12px;
     border-radius: 6px;
@@ -138,4 +244,55 @@ h1 {
     white-space: nowrap;
     pointer-events: none;
     z-index: 10;
+}
+
+/* Header 與說明列 */
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    /* 與主區隔開 */
+}
+
+.legend-row {
+    display: flex;
+    gap: 16px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.9em;
+    color: var(--text-primary);
+}
+
+/* 繼承可拖曳區、Sidebar 使用的 led-square 樣式 */
+.legend-square {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #555;
+    /* 預設安全色：深灰 */
+    position: relative;
+}
+
+.legend-square.off {
+    background: green;
+}
+
+.legend-square.on {
+    background: red;
+}
+
+/* 內嵌 icon */
+.legend-square.on .status-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    height: 60%;
+    pointer-events: none;
 }
