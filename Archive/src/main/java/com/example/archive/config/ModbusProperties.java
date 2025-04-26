@@ -18,11 +18,12 @@ public class ModbusProperties {
         private int startOffset;
         private int count;
         public int getStartOffset() { return startOffset; }
-        public void setStartOffset(int startOffset) { this.startOffset = startOffset; }
+        public void setStartOffset(int s) { this.startOffset = s; }
         public int getCount() { return count; }
-        public void setCount(int count) { this.count = count; }
+        public void setCount(int c) { this.count = c; }
     }
 
+    // getters / setters
     public String getIp() { return ip; }
     public void setIp(String ip) { this.ip = ip; }
     public int getPort() { return port; }

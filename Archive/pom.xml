@@ -47,16 +47,22 @@
             <scope>runtime</scope>
         </dependency>
         <!-- j2mod -->
-        <dependency>
+        <!-- <dependency>
             <groupId>com.ghgande</groupId>
             <artifactId>j2mod</artifactId>
             <version>2.5.2</version>
-        </dependency>
+        </dependency> -->
         <!-- 加入 Modbus/TCP 庫 -->
         <dependency>
             <groupId>com.ghgande</groupId>
             <artifactId>j2mod</artifactId>
             <version>2.5.0</version>
+        </dependency>
+        <!-- javax.annotation for PostConstruct/PreDestroy -->
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>1.3.2</version>
         </dependency>
         <!-- 測試依賴 -->
         <dependency>

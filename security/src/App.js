@@ -39,8 +39,8 @@ function Led({ message, floorAssignment, onFloorChange }) {
                 value={floorAssignment || 'floor1'}
                 onChange={e => onFloorChange(message.device, e.target.value)}
             >
-                <option value="floor1">Floor 1</option>
-                <option value="floor2">Floor 2</option>
+                <option value="floor1">F 1</option>
+                <option value="floor2">F 2</option>
             </select>
         </div>
     );
@@ -128,13 +128,13 @@ function Tabs({ activeTab, setActiveTab }) {
                 className={`tab ${activeTab === 'floor1' ? 'active' : ''}`}
                 onClick={() => setActiveTab('floor1')}
             >
-                Floor 1
+                F 1
             </button>
             <button
                 className={`tab ${activeTab === 'floor2' ? 'active' : ''}`}
                 onClick={() => setActiveTab('floor2')}
             >
-                Floor 2
+                F 2
             </button>
         </div>
     );
