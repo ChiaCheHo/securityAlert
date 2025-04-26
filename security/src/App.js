@@ -3,6 +3,7 @@ import './App.css';
 
 // 狀態對應圖檔檔名
 const statusIconMap = {
+    '無狀況': 'safe.png',
     '求救': 'sos.png',
     '瓦斯': 'gas-tank.png',
     '反脅迫': 'woman.png',
@@ -22,21 +23,19 @@ function Led({ message, floorAssignment, onFloorChange }) {
     const isOn = message.code !== 0;
     const iconName = statusIconMap[message.status];
     return (
-        <div className="led-box">
-            {/* LED 圖示 + 狀態圖 */}
-            <div className={`led-square ${isOn ? 'on' : 'off'}`}>
-                {iconName && (
-                    <img
-                        src={`${process.env.PUBLIC_URL}/${iconName}`}
-                        alt={message.status}
-                        className="status-icon"
-                    />
-                )}
-            </div>
-            <span className="name-label">{message.name}</span>
-            <span className="status-label">{message.status}</span>
+        <div className={`led-pill ${isOn ? 'on' : 'off'}`}>
+            {iconName && (
+                <img
+                    src={`${process.env.PUBLIC_URL}/${iconName}`}
+                    alt={message.status}
+                    className="pill-icon"
+                />
+            )}
+            <span className="pill-text">
+                {message.name} · {message.status}
+            </span>
             <select
-                className="floor-select"
+                className="pill-select"
                 value={floorAssignment || 'floor1'}
                 onChange={e => onFloorChange(message.device, e.target.value)}
             >
@@ -251,7 +250,9 @@ function App() {
                 <div className="legend-row">
                     {/* 安全（無狀況） */}
                     <div className="legend-item">
-                        <div className="legend-square off"></div>
+                        <div className="legend-square off">
+                            <img src={`${process.env.PUBLIC_URL}/safe.png`} alt="安全" className="status-icon" />
+                        </div>
                         <span>安全</span>
                     </div>
                     {/* 求救 */}

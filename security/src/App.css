@@ -21,7 +21,8 @@
 }
 
 h1 {
-    color: var(--accent);
+    /* color: var(--accent); */
+    color: #000;
     margin-bottom: 24px;
 }
 
@@ -131,10 +132,11 @@ h1 {
 }
 
 /* Sidebar LED */
+/* Sidebar LED 改为圆形 */
 .led-box .led-square {
-    width: 20px;
-    height: 20px;
-    border-radius: 6px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
     background: #555;
     flex-shrink: 0;
 }
@@ -182,8 +184,8 @@ h1 {
 }
 
 .draggable-led .led-square {
-    width: 24px;
-    height: 24px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     background: #555;
     position: relative;
@@ -270,8 +272,8 @@ h1 {
 
 /* 繼承可拖曳區、Sidebar 使用的 led-square 樣式 */
 .legend-square {
-    width: 20px;
-    height: 20px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     background: #555;
     /* 預設安全色：深灰 */
@@ -295,4 +297,61 @@ h1 {
     width: 60%;
     height: 60%;
     pointer-events: none;
+}
+
+/* 整個膠囊容器 */
+.led-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 1em;
+    font-weight: 500;
+    color: #fff;
+    /* 依狀態決定背景色 */
+    background: var(--accent-light);
+    margin-bottom: 8px;
+}
+
+/* off（安全/無狀況）狀態 */
+.led-pill.off {
+    background: #8fd19e;
+    /* 淺綠色 */
+}
+
+/* on（警報）狀態 */
+.led-pill.on {
+    background: #eb6b6b;
+    /* 淺紅色 */
+}
+
+/* 狀態圖示 */
+.pill-icon {
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+}
+
+/* 文字 */
+.pill-text {
+    white-space: nowrap;
+}
+
+/* 樓層下拉也做成膠囊式 */
+.pill-select {
+    appearance: none;
+    border: none;
+    background: #fff;
+    color: #333;
+    font-size: 0.8em;
+    padding: 4px 8px;
+    border-radius: 999px;
+    cursor: pointer;
+    /* 加一個小箭頭 */
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path fill='%23333' d='M0,0l5,6l5,-6z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 6px center;
+    background-size: 10px 6px;
+    padding-right: 24px;
 }
