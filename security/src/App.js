@@ -13,7 +13,23 @@ const statusIconMap = {
     '防盜3區警報': 'theft.png',
     '防盜4區警報': 'theft.png',
     '防盜5區警報': 'theft.png',
-    '防拆警報': 'shovel.png'
+    '防拆警報': 'shovel.png',
+    '警報解除通知': 'safe.png' // 新增警報解除通知
+};
+
+/**
+ * 解析 message 字段，去除設備類型前綴
+ */
+const parseStatusMessage = (message) => {
+    return message.replace(/^(室內機|緊急對講機)-/, ''); // 移除「室內機-」或「緊急對講機-」
+};
+
+/**
+ * 生成設備唯一鍵
+ */
+const getDeviceKey = (device, message) => {
+    const type = message.startsWith('室內機') ? 'indoor' : 'intercom';
+    return `${type}-${device}`;
 };
 
 /**
@@ -21,23 +37,26 @@ const statusIconMap = {
  */
 function Led({ message, floorAssignment, onFloorChange }) {
     const isOn = message.code !== 0;
-    const iconName = statusIconMap[message.status];
+    const status = parseStatusMessage(message.status); // 解析純警報描述
+    const iconName = statusIconMap[status];
+    const deviceKey = getDeviceKey(message.device, message.status);
+
     return (
         <div className={`led-pill ${isOn ? 'on' : 'off'}`}>
             {iconName && (
                 <img
                     src={`${process.env.PUBLIC_URL}/${iconName}`}
-                    alt={message.status}
+                    alt={status}
                     className="pill-icon"
                 />
             )}
             <span className="pill-text">
-                {message.name} · {message.status}
+                {message.name} · {status}
             </span>
             <select
                 className="pill-select"
                 value={floorAssignment || 'floor1'}
-                onChange={e => onFloorChange(message.device, e.target.value)}
+                onChange={(e) => onFloorChange(deviceKey, e.target.value)}
             >
                 <option value="floor1">F 1</option>
                 <option value="floor2">F 2</option>
@@ -49,25 +68,26 @@ function Led({ message, floorAssignment, onFloorChange }) {
 /**
  * 可拖拽的 LED（地標 pin）
  */
-function DraggableLed({ device, code, status, name, x, y, onUpdate }) {
+function DraggableLed({ deviceKey, code, status, name, x, y, onUpdate }) {
     const [pos, setPos] = useState({ x, y });
     const [dragging, setDragging] = useState(false);
     const [rel, setRel] = useState({ x: 0, y: 0 });
     const [hovered, setHovered] = useState(false);
     const isOn = code !== 0;
-    const iconName = statusIconMap[status];
+    const parsedStatus = parseStatusMessage(status); // 解析純警報描述
+    const iconName = statusIconMap[parsedStatus];
 
     useEffect(() => {
         setPos({ x, y });
     }, [x, y]);
 
-    const onMouseDown = e => {
+    const onMouseDown = (e) => {
         if (e.button !== 0) return;
         setDragging(true);
         setRel({ x: e.pageX - pos.x, y: e.pageY - pos.y });
         e.preventDefault();
     };
-    const onMouseMove = e => {
+    const onMouseMove = (e) => {
         if (dragging) {
             setPos({ x: e.pageX - rel.x, y: e.pageY - rel.y });
             e.preventDefault();
@@ -89,7 +109,7 @@ function DraggableLed({ device, code, status, name, x, y, onUpdate }) {
     }, [dragging, pos, rel, onUpdate]);
 
     const editName = () => {
-        const newName = prompt(`輸入設備 #${device} 名稱：`, name);
+        const newName = prompt(`輸入設備 #${deviceKey} 名稱：`, name);
         if (newName !== null && newName.trim() !== '') {
             onUpdate({ name: newName.trim() });
         }
@@ -108,12 +128,12 @@ function DraggableLed({ device, code, status, name, x, y, onUpdate }) {
                 {iconName && (
                     <img
                         src={`${process.env.PUBLIC_URL}/${iconName}`}
-                        alt={status}
+                        alt={parsedStatus}
                         className="status-icon"
                     />
                 )}
             </div>
-            {hovered && <span className="status-label">{status}</span>}
+            {hovered && <span className="status-label">{parsedStatus}</span>}
         </div>
     );
 }
@@ -153,7 +173,7 @@ function App() {
     useEffect(() => {
         const fetchStatuses = () => {
             fetch('http://localhost:8080/api/status')
-                .then(res => res.ok ? res.json() : Promise.reject(res.statusText))
+                .then((res) => (res.ok ? res.json() : Promise.reject(res.statusText)))
                 .then(setStatuses)
                 .catch(console.error);
         };
@@ -179,7 +199,7 @@ function App() {
     // 新設備初始化
     useEffect(() => {
         if (!statuses.length) return;
-        setLayout(prev => {
+        setLayout((prev) => {
             const updated = {
                 ...prev,
                 floorAssignment: { ...prev.floorAssignment },
@@ -187,7 +207,7 @@ function App() {
                 floor2: { ...prev.floor2 }
             };
             statuses.forEach((ds, i) => {
-                const id = ds.device;
+                const id = getDeviceKey(ds.device, ds.message); // 使用唯一鍵
                 if (!updated.floorAssignment[id]) {
                     updated.floorAssignment[id] = 'floor1';
                 }
@@ -196,7 +216,7 @@ function App() {
                     updated[f][id] = {
                         x: 20 + (i % 7) * 120,
                         y: 20 + Math.floor(i / 7) * 140,
-                        name: `Device ${id}`
+                        name: `${ds.message.startsWith('室內機') ? '室內機' : '緊急對講機'} ${ds.device}`
                     };
                 }
             });
@@ -206,7 +226,7 @@ function App() {
     }, [statuses]);
 
     const handleUpdate = (id, changes) => {
-        setLayout(prev => {
+        setLayout((prev) => {
             const f = prev.floorAssignment[id] || 'floor1';
             const updated = {
                 ...prev,
@@ -221,7 +241,7 @@ function App() {
     };
 
     const handleFloorChange = (deviceId, newFloor) => {
-        setLayout(prev => {
+        setLayout((prev) => {
             const cur = prev.floorAssignment[deviceId] || 'floor1';
             const updated = {
                 ...prev,
@@ -238,13 +258,14 @@ function App() {
         });
     };
 
-    const floorplanURL = activeTab === 'floor1'
-        ? process.env.PUBLIC_URL + '/floorplan1.jpg'
-        : process.env.PUBLIC_URL + '/floorplan2.png';
+    const floorplanURL =
+        activeTab === 'floor1'
+            ? process.env.PUBLIC_URL + '/floorplan1.jpg'
+            : process.env.PUBLIC_URL + '/floorplan2.png';
 
     return (
         <div className="App">
-            {/* ① 新增：標題 + 說明欄 */}
+            {/* 標題 + 圖例 */}
             <div className="header-row">
                 <h1>設備警報監控</h1>
                 <div className="legend-row">
@@ -297,26 +318,38 @@ function App() {
                         </div>
                         <span>防拆</span>
                     </div>
+                    {/* 警報解除通知 */}
+                    <div className="legend-item">
+                        <div className="legend-square off">
+                            <img src={`${process.env.PUBLIC_URL}/safe.png`} alt="解除" className="status-icon" />
+                        </div>
+                        <span>解除</span>
+                    </div>
                 </div>
             </div>
 
-            {/* ② 原本的主容器 */}
+            {/* 主容器 */}
             <div className="main-container">
                 <div className="sidebar">
                     <div className="led-grid">
-                        {statuses.map(ds => (
-                            <Led
-                                key={ds.device}
-                                message={{
-                                    name: layout[layout.floorAssignment[ds.device] || 'floor1'][ds.device]?.name || `Device ${ds.device}`,
-                                    status: ds.message,
-                                    code: ds.code,
-                                    device: ds.device
-                                }}
-                                floorAssignment={layout.floorAssignment[ds.device]}
-                                onFloorChange={handleFloorChange}
-                            />
-                        ))}
+                        {statuses.map((ds) => {
+                            const deviceKey = getDeviceKey(ds.device, ds.message);
+                            return (
+                                <Led
+                                    key={deviceKey}
+                                    message={{
+                                        name:
+                                            layout[layout.floorAssignment[deviceKey] || 'floor1'][deviceKey]?.name ||
+                                            `${ds.message.startsWith('室內機') ? '室內機' : '緊急對講機'} ${ds.device}`,
+                                        status: ds.message,
+                                        code: ds.code,
+                                        device: ds.device
+                                    }}
+                                    floorAssignment={layout.floorAssignment[deviceKey]}
+                                    onFloorChange={handleFloorChange}
+                                />
+                            );
+                        })}
                     </div>
                 </div>
                 <div
@@ -326,19 +359,20 @@ function App() {
                     <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
                     <div className="draggable-content">
                         {statuses
-                            .filter(ds => layout.floorAssignment[ds.device] === activeTab)
-                            .map(ds => {
-                                const info = layout[activeTab][ds.device] || {};
+                            .filter((ds) => layout.floorAssignment[getDeviceKey(ds.device, ds.message)] === activeTab)
+                            .map((ds) => {
+                                const deviceKey = getDeviceKey(ds.device, ds.message);
+                                const info = layout[activeTab][deviceKey] || {};
                                 return (
                                     <DraggableLed
-                                        key={ds.device}
-                                        device={ds.device}
+                                        key={deviceKey}
+                                        deviceKey={deviceKey}
                                         code={ds.code}
                                         status={ds.message}
-                                        name={info.name || `Device ${ds.device}`}
+                                        name={info.name || `${ds.message.startsWith('室內機') ? '室內機' : '緊急對講機'} ${ds.device}`}
                                         x={info.x || 20}
                                         y={info.y || 20}
-                                        onUpdate={changes => handleUpdate(ds.device, changes)}
+                                        onUpdate={(changes) => handleUpdate(deviceKey, changes)}
                                     />
                                 );
                             })}
