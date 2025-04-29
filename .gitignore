@@ -1,0 +1,7 @@
+# 忽略 Node.js 相依套件
+/security/node_modules/
+# 忽略 React 的 build 輸出（如果有）
+/security/build/
+
+# 忽略 Maven 編譯輸出
+/Archive/target/
