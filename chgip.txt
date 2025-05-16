@@ -1,0 +1,28 @@
+sudo ip addr add 192.168.100.7/24 dev enp174s0
+sudo ip route add default via 192.168.1.1
+ip addr
+sudo java -jar target/archive-0.0.1-SNAPSHOT.jar
+"proxy": "http://localhost:8080"
+  
+----- config application.properties -----
+  
+  /home/whs-8000u/securityAlert-main/Archive/src/main/resources/ application.properties
+  
+------- ip config --------
+ip link show
+  
+sudo ip addr add 192.168.100.7/24 dev enp174s0
+sudo ip route add default via 192.168.1.1
+
+--- ip check ---
+ip addr show enp174s0
+
+-------- backend API implement --------
+路徑： cd /home/whs-8000u/securityAlert-main/Archive
+修改內容： mvn clean package
+開啟後台： mvn spring-boot:run
+
+----- frontend deploy -----
+路徑： cd /home/whs-8000u/securityAlert-main/security
+開啟網頁： npm run dev
+

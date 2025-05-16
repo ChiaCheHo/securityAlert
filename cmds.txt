@@ -1,0 +1,3 @@
+chiacheho@ChiaChes-MacBook-Air Archive % mvn clean package
+chiacheho@ChiaChes-MacBook-Air Archive % mvn spring-boot:run
+chiacheho@ChiaChes-MacBook-Air security % npm run dev

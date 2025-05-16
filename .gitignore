@@ -5,3 +5,5 @@
 
 # 忽略 Maven 編譯輸出
 /Archive/target/
+.DS_Store
+# 忽略 IntelliJ IDEA 的專案檔
